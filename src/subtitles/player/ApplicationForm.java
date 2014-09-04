@@ -2,6 +2,8 @@ package subtitles.player;
 
 import java.io.*;
 import javax.swing.*;
+import java.util.regex.*;
+import java.nio.CharBuffer;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -114,17 +116,42 @@ public class ApplicationForm extends javax.swing.JFrame {
         int returnVal = subtitleFileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = subtitleFileChooser.getSelectedFile();
-            try {
-              FileReader fileReader = new FileReader( file.getAbsolutePath() );
-              status.setText(String.format("Opened file: %s", file.getName()));
-            } catch (IOException ex) {
-              System.out.println("problem accessing file"+file.getAbsolutePath());
-            }
+            OpenFile(file);
         } else {
             System.out.println("File access cancelled by user.");
         }
     }//GEN-LAST:event_openSubtitleFileActionPerformed
 
+    private void OpenFile(File file) {
+        status.setText(String.format("Opened file: %s", file.getName()));
+        SubtitleItem[] subtitle_items = ParseFile(file);
+    }
+    
+    private SubtitleItem[] ParseFile(File file) {
+        try{
+            FileReader fileReader = new FileReader( file.getAbsolutePath());
+            String nl = "\\\n";
+            String sp = "[ \\t]*";
+            Pattern srt = Pattern.compile("(?s)(\\d+)" + sp + nl + "(\\d{1,2}):(\\d\\d):(\\d\\d),(\\d\\d\\d)" + sp + "-->"+ sp + "(\\d\\d):(\\d\\d):(\\d\\d),(\\d\\d\\d)" + sp + "(X1:\\d.*?)??" + nl + "(.*?)" + nl + nl);
+            CharBuffer file_content = CharBuffer.allocate(100000);
+            try {                
+                fileReader.read(file_content);
+                file_content.flip();
+            } catch (IOException e) {
+                status.setText("Error reading file");
+                return null;
+            }
+            
+            CharSequence file_content_seq = (CharSequence)file_content.toString();
+            Matcher matches = srt.matcher(file_content_seq);
+            status.setText(file_content.toString());
+            
+        } catch(FileNotFoundException e) {
+            status.setText("Could not read file");
+        }
+        return null;
+    }
+    
     /**
      * @param args the command line arguments
      */
