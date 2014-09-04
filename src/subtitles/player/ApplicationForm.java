@@ -4,6 +4,7 @@ import java.io.*;
 import javax.swing.*;
 import java.util.regex.*;
 import java.nio.CharBuffer;
+import java.util.ArrayList;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -124,13 +125,13 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void OpenFile(File file) {
         status.setText(String.format("Opened file: %s", file.getName()));
-        SubtitleItem[] subtitle_items = ParseFile(file);
+        ArrayList<SubtitleItem> subtitle_items = ParseFile(file);
     }
     
-    private SubtitleItem[] ParseFile(File file) {
+    private ArrayList<SubtitleItem> ParseFile(File file) {
         try{
             FileReader fileReader = new FileReader( file.getAbsolutePath());
-            String nl = "\\\n";
+            String nl = "\\n";
             String sp = "[ \\t]*";
             Pattern srt = Pattern.compile("(?s)(\\d+)" + sp + nl + "(\\d{1,2}):(\\d\\d):(\\d\\d),(\\d\\d\\d)" + sp + "-->"+ sp + "(\\d\\d):(\\d\\d):(\\d\\d),(\\d\\d\\d)" + sp + "(X1:\\d.*?)??" + nl + "(.*?)" + nl + nl);
             CharBuffer file_content = CharBuffer.allocate(100000);
@@ -144,8 +145,13 @@ public class ApplicationForm extends javax.swing.JFrame {
             
             CharSequence file_content_seq = (CharSequence)file_content.toString();
             Matcher matches = srt.matcher(file_content_seq);
-            status.setText(file_content.toString());
+            ArrayList<SubtitleItem> found_items = new ArrayList<SubtitleItem>();
             
+            while(matches.find()) {
+                found_items.add(new SubtitleItem());
+            }
+            status.setText(file_content.toString());
+            return found_items;
         } catch(FileNotFoundException e) {
             status.setText("Could not read file");
         }
