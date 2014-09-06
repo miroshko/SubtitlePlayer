@@ -1,10 +1,13 @@
 package subtitles.player;
 
 import java.io.*;
+import java.util.concurrent.Executors;
 import javax.swing.*;
 import subtitleFile.*;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -161,7 +164,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     private TimedTextObject timedText;
     private int currentPosition = 0;
     private int resolution = 10; // ms
-    private Timer timer;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private Future schedulerFuture;
     
     private String formatTime(int milliseconds) {
         int seconds = (int) (milliseconds / 1000) % 60;
@@ -191,15 +195,13 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
 
     private void play() {
-        timer = new Timer();
-        TimerTask renderFrame = new TimerTask() {
-            @Override
+        schedulerFuture = scheduler.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 currentPosition += resolution;
                 reflectPosition();
-            }
-        };
-        timer.schedule(renderFrame, 0, resolution);
+            }        
+        }, 0, resolution, TimeUnit.MILLISECONDS);
+
         pauseButton.setEnabled(true);
         playButton.setEnabled(false);
     }
@@ -211,7 +213,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
     
     private void pause() {
-        timer.cancel();
+        schedulerFuture.cancel(true);
         pauseButton.setEnabled(false);
         playButton.setEnabled(true);
     }
@@ -230,15 +232,19 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_progressSliderStateChanged
 
     private void progressSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_progressSliderMouseDragged
-        System.out.println("dragged");
+
     }//GEN-LAST:event_progressSliderMouseDragged
 
+    boolean pausedOnMousePressed;
     private void progressSliderMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_progressSliderMousePressed
-        pause();
+        pausedOnMousePressed = schedulerFuture == null || schedulerFuture.isCancelled();
+        if (!pausedOnMousePressed)
+            pause();
     }//GEN-LAST:event_progressSliderMousePressed
 
     private void progressSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_progressSliderMouseReleased
-        play();
+        if (!pausedOnMousePressed)
+            play();
     }//GEN-LAST:event_progressSliderMouseReleased
 
     
