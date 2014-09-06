@@ -2,9 +2,7 @@ package subtitles.player;
 
 import java.io.*;
 import javax.swing.*;
-import java.util.regex.*;
-import java.nio.CharBuffer;
-import java.util.ArrayList;
+import subtitleFile.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -37,10 +35,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         subtitleFileChooser = new javax.swing.JFileChooser();
         openSubtitleFile = new javax.swing.JButton();
         status = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jSlider1 = new javax.swing.JSlider();
-        jLabel1 = new javax.swing.JLabel();
+        playButton = new javax.swing.JButton();
+        pauseButton = new javax.swing.JButton();
+        progressSlider = new javax.swing.JSlider();
+        timePositionLabel = new javax.swing.JLabel();
+        subtitleLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -55,41 +54,44 @@ public class ApplicationForm extends javax.swing.JFrame {
         status.setText("No file is open");
         status.setToolTipText("");
 
-        jButton1.setText("▶");
-        jButton1.setToolTipText("");
-        jButton1.setEnabled(false);
+        playButton.setText("▶");
+        playButton.setToolTipText("");
+        playButton.setEnabled(false);
 
-        jButton2.setText("▐▐");
-        jButton2.setToolTipText("");
-        jButton2.setEnabled(false);
+        pauseButton.setText("▐▐");
+        pauseButton.setToolTipText("");
+        pauseButton.setEnabled(false);
 
-        jSlider1.setMaximum(200);
-        jSlider1.setValue(0);
-        jSlider1.setEnabled(false);
+        progressSlider.setMaximum(200);
+        progressSlider.setValue(0);
+        progressSlider.setEnabled(false);
 
-        jLabel1.setFont(new java.awt.Font("Ubuntu", 0, 36)); // NOI18N
-        jLabel1.setText("0:00");
-        jLabel1.setEnabled(false);
+        timePositionLabel.setFont(new java.awt.Font("Ubuntu", 0, 36)); // NOI18N
+        timePositionLabel.setText("0:00");
+        timePositionLabel.setEnabled(false);
+
+        subtitleLabel.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 269, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(subtitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressSlider, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(openSubtitleFile)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(timePositionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 269, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -102,12 +104,14 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(timePositionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addComponent(progressSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(subtitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -123,39 +127,25 @@ public class ApplicationForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_openSubtitleFileActionPerformed
 
-    private void OpenFile(File file) {
-        status.setText(String.format("Opened file: %s", file.getName()));
-        ArrayList<SubtitleItem> subtitle_items = ParseFile(file);
+    private void enableControls() {
+        
     }
     
-    private ArrayList<SubtitleItem> ParseFile(File file) {
-        try{
-            FileReader fileReader = new FileReader( file.getAbsolutePath());
-            String nl = "\\n";
-            String sp = "[ \\t]*";
-            Pattern srt = Pattern.compile("(?s)(\\d+)" + sp + nl + "(\\d{1,2}):(\\d\\d):(\\d\\d),(\\d\\d\\d)" + sp + "-->"+ sp + "(\\d\\d):(\\d\\d):(\\d\\d),(\\d\\d\\d)" + sp + "(X1:\\d.*?)??" + nl + "(.*?)" + nl + nl);
-            CharBuffer file_content = CharBuffer.allocate(100000);
-            try {                
-                fileReader.read(file_content);
-                file_content.flip();
-            } catch (IOException e) {
-                status.setText("Error reading file");
-                return null;
-            }
-            
-            CharSequence file_content_seq = (CharSequence)file_content.toString();
-            Matcher matches = srt.matcher(file_content_seq);
-            ArrayList<SubtitleItem> found_items = new ArrayList<SubtitleItem>();
-            
-            while(matches.find()) {
-                found_items.add(new SubtitleItem());
-            }
-            status.setText(file_content.toString());
-            return found_items;
-        } catch(FileNotFoundException e) {
-            status.setText("Could not read file");
+    private void disableControls() {
+        
+    }
+    
+    private void OpenFile(File file) {
+        status.setText(String.format("Opened file: %s", file.getName()));
+        FormatSRT srt = new FormatSRT();
+        try {
+            InputStream is = new FileInputStream(file);
+            TimedTextObject tto = srt.parseFile(file.getAbsolutePath(), is);
+            status.setText("File read successfully");
+            enableControls();
+        } catch (IOException e) {
+            status.setText("Error opening file");
         }
-        return null;
     }
     
     /**
@@ -194,12 +184,13 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JSlider jSlider1;
     private javax.swing.JButton openSubtitleFile;
+    private javax.swing.JButton pauseButton;
+    private javax.swing.JButton playButton;
+    private javax.swing.JSlider progressSlider;
     private javax.swing.JLabel status;
     private javax.swing.JFileChooser subtitleFileChooser;
+    private javax.swing.JLabel subtitleLabel;
+    private javax.swing.JLabel timePositionLabel;
     // End of variables declaration//GEN-END:variables
 }
