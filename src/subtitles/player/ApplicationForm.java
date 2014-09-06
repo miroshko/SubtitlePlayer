@@ -3,6 +3,8 @@ package subtitles.player;
 import java.io.*;
 import javax.swing.*;
 import subtitleFile.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -57,41 +59,69 @@ public class ApplicationForm extends javax.swing.JFrame {
         playButton.setText("▶");
         playButton.setToolTipText("");
         playButton.setEnabled(false);
+        playButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playButtonActionPerformed(evt);
+            }
+        });
 
         pauseButton.setText("▐▐");
         pauseButton.setToolTipText("");
         pauseButton.setEnabled(false);
+        pauseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pauseButtonActionPerformed(evt);
+            }
+        });
 
         progressSlider.setMaximum(200);
         progressSlider.setValue(0);
         progressSlider.setEnabled(false);
+        progressSlider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                progressSliderMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                progressSliderMouseReleased(evt);
+            }
+        });
+        progressSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                progressSliderStateChanged(evt);
+            }
+        });
+        progressSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                progressSliderMouseDragged(evt);
+            }
+        });
 
         timePositionLabel.setFont(new java.awt.Font("Ubuntu", 0, 36)); // NOI18N
         timePositionLabel.setText("0:00");
         timePositionLabel.setEnabled(false);
 
-        subtitleLabel.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
+        subtitleLabel.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(subtitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(progressSlider, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(progressSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(openSubtitleFile)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(timePositionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 269, Short.MAX_VALUE)))
+                        .addComponent(timePositionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(subtitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -106,12 +136,12 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(timePositionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(timePositionLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progressSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(subtitleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(18, 18, 18))
         );
 
         pack();
@@ -120,27 +150,117 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void openSubtitleFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openSubtitleFileActionPerformed
         int returnVal = subtitleFileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = subtitleFileChooser.getSelectedFile();
-            OpenFile(file);
+            currentFile = subtitleFileChooser.getSelectedFile();
+            OpenCurrentFile();
         } else {
             System.out.println("File access cancelled by user.");
         }
     }//GEN-LAST:event_openSubtitleFileActionPerformed
 
+    private File currentFile;
+    private TimedTextObject timedText;
+    private int currentPosition = 0;
+    private int resolution = 10; // ms
+    private Timer timer;
+    
+    private String formatTime(int milliseconds) {
+        int seconds = (int) (milliseconds / 1000) % 60;
+        int minutes = (int) ((milliseconds / (1000*60)) % 60);
+        int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+        String formatted = String.format("%02d:%02d", minutes, seconds);
+        if (hours > 0) {
+            formatted = String.format("%d:", hours) + formatted;
+        }
+        return formatted;
+    }
+    
+    private String getTextOnCurrentPosition() {
+        int prevKey = timedText.captions.firstKey();
+        for(int key: timedText.captions.keySet()) {
+            if(key > currentPosition) {
+              break;  
+            }
+            prevKey = key;
+        }
+        Caption currCaption = timedText.captions.get(prevKey);
+        if (currCaption.start.getMseconds() < currentPosition &&
+            currCaption.end.getMseconds() > currentPosition) {
+                return currCaption.content;
+        }
+        return "";
+    }
+
+    private void play() {
+        timer = new Timer();
+        TimerTask renderFrame = new TimerTask() {
+            @Override
+            public void run() {
+                currentPosition += resolution;
+                reflectPosition();
+            }
+        };
+        timer.schedule(renderFrame, 0, resolution);
+        pauseButton.setEnabled(true);
+        playButton.setEnabled(false);
+    }
+    
+    private void reflectPosition() {
+        progressSlider.setValue(currentPosition);
+        timePositionLabel.setText(formatTime(currentPosition));
+        subtitleLabel.setText(getTextOnCurrentPosition());
+    }
+    
+    private void pause() {
+        timer.cancel();
+        pauseButton.setEnabled(false);
+        playButton.setEnabled(true);
+    }
+    
+    private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
+        play();
+    }//GEN-LAST:event_playButtonActionPerformed
+
+    private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
+        pause();
+    }//GEN-LAST:event_pauseButtonActionPerformed
+
+    private void progressSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_progressSliderStateChanged
+        currentPosition = progressSlider.getValue();
+        reflectPosition();
+    }//GEN-LAST:event_progressSliderStateChanged
+
+    private void progressSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_progressSliderMouseDragged
+        System.out.println("dragged");
+    }//GEN-LAST:event_progressSliderMouseDragged
+
+    private void progressSliderMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_progressSliderMousePressed
+        pause();
+    }//GEN-LAST:event_progressSliderMousePressed
+
+    private void progressSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_progressSliderMouseReleased
+        play();
+    }//GEN-LAST:event_progressSliderMouseReleased
+
+    
     private void enableControls() {
-        
+        playButton.setEnabled(true);
+        pauseButton.setEnabled(false);
+        progressSlider.setEnabled(true);
     }
     
     private void disableControls() {
         
     }
-    
-    private void OpenFile(File file) {
-        status.setText(String.format("Opened file: %s", file.getName()));
+   
+
+    private void OpenCurrentFile() {
+        status.setText(String.format("Opened file: %s", currentFile.getName()));
         FormatSRT srt = new FormatSRT();
         try {
-            InputStream is = new FileInputStream(file);
-            TimedTextObject tto = srt.parseFile(file.getAbsolutePath(), is);
+            InputStream is = new FileInputStream(currentFile);
+            timedText = srt.parseFile(currentFile.getAbsolutePath(), is);
+            int length = timedText.captions.lastEntry().getValue().end.getMseconds();
+            progressSlider.setMaximum(length);
             status.setText("File read successfully");
             enableControls();
         } catch (IOException e) {
