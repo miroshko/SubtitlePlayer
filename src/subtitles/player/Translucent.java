@@ -50,32 +50,7 @@ public class Translucent extends JPanel implements ActionListener {
         g2d.setComposite(AlphaComposite.Src);
         g2d.setPaint(g2d.getBackground());
         g2d.fillRect(0, 0, w, h);
-        renderTime(g2d);
-        int w2 = time.getWidth() / 2;
-        int h2 = time.getHeight() / 2;
         g2d.setComposite(AlphaComposite.SrcOver);
-        g2d.drawImage(time, w / 2 - w2, h / 2 - h2, null);
-    }
-
-    private void renderTime(Graphics2D g2d) {
-        g2d.setFont(font);
-        String s = df.format(now);
-        FontMetrics fm = g2d.getFontMetrics();
-        int w = fm.stringWidth(s);
-        int h = fm.getHeight();
-        if (time == null && timeG == null) {
-            time = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            timeG = time.createGraphics();
-            timeG.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-            timeG.setFont(font);
-        }
-        timeG.setComposite(AlphaComposite.Clear);
-        timeG.fillRect(0, 0, w, h);
-        timeG.setComposite(AlphaComposite.Src);
-        timeG.setPaint(Color.green);
-        timeG.drawString(s, 0, fm.getAscent());
     }
 
     private static void create() {

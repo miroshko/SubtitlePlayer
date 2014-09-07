@@ -58,11 +58,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         subtitleContainerLabel.setBackground(new Color(0,0,0,0));
         subtitleContainerLabel.setOpaque(false);
         subtitleFrame.setVisible(true);
-        
-        currentFile = new File("/home/miroshko/Downloads/subs-sonnenallee-1999-www.subtitlecube.com/Sonnenallee.1999.German.DVDRip.XviD-TML.srt");
-        OpenCurrentFile();
-        currentPosition = 665000;
-        play();
     }
 
     /**
@@ -84,7 +79,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         pauseButton = new javax.swing.JButton();
         progressSlider = new javax.swing.JSlider();
         timePositionLabel = new javax.swing.JLabel();
-        hide = new javax.swing.JButton();
 
         subtitleFrame.setAlwaysOnTop(true);
         subtitleFrame.setBackground(new java.awt.Color(255, 0, 142));
@@ -92,7 +86,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         subtitleContainerLabel.setBackground(new java.awt.Color(172, 188, 40));
         subtitleContainerLabel.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
-        subtitleContainerLabel.setForeground(new java.awt.Color(176, 41, 139));
+        subtitleContainerLabel.setForeground(new java.awt.Color(236, 231, 37));
         subtitleContainerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout translucent1Layout = new javax.swing.GroupLayout(translucent1);
@@ -169,13 +163,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         timePositionLabel.setText("0:00");
         timePositionLabel.setEnabled(false);
 
-        hide.setText("hide");
-        hide.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hideActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -189,14 +176,11 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(timePositionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(hide))
+                        .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(timePositionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -215,9 +199,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addComponent(timePositionLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progressSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
-                .addComponent(hide)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -286,7 +268,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
     
     private void pause() {
-        schedulerFuture.cancel(true);
+        if (schedulerFuture != null) {
+            schedulerFuture.cancel(true);
+        }
         pauseButton.setEnabled(false);
         playButton.setEnabled(true);
     }
@@ -316,10 +300,6 @@ public class ApplicationForm extends javax.swing.JFrame {
             play();
     }//GEN-LAST:event_progressSliderMouseReleased
 
-    private void hideActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideActionPerformed
-        subtitleFrame.repaint();
-    }//GEN-LAST:event_hideActionPerformed
-
     
     private void enableControls() {
         playButton.setEnabled(true);
@@ -340,6 +320,8 @@ public class ApplicationForm extends javax.swing.JFrame {
             timedText = srt.parseFile(currentFile.getAbsolutePath(), is);
             int length = timedText.captions.lastEntry().getValue().end.getMseconds();
             progressSlider.setMaximum(length);
+            progressSlider.setValue(0);
+            pause();
             enableControls();
             // subtitleForm = new SubtitleWindow();
             // subtitleForm.setVisible(true);
@@ -384,7 +366,6 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton hide;
     private javax.swing.JButton openSubtitleFile;
     private javax.swing.JButton pauseButton;
     private javax.swing.JButton playButton;
