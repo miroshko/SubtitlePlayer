@@ -4,6 +4,7 @@ SubtitlePlayer
 Plays subtitles independently from any video. Useful for streams.
 
 Develepment in progeress
+
 Tested on Ubuntu 14.04
 
 Planned features:
