@@ -7,11 +7,13 @@ import subtitleFile.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Future;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
-import java.awt.Graphics;
 import java.awt.Color;
 import javax.swing.border.Border;
+import sun.awt.resources.awt;
 
 
 /*
@@ -34,6 +36,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private int resolution = 10; // ms
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private Future schedulerFuture;
+    private HashMap<JButton, Color> buttonColors = new HashMap<JButton, Color>();
    
     /**
      * Creates new form ApplicationForm
@@ -54,10 +57,24 @@ public class ApplicationForm extends javax.swing.JFrame {
                 height
         );
         
-        subtitleFrame.setBackground(new Color(0,0,0,0));
-        subtitleContainerLabel.setBackground(new Color(0,0,0,0));
+        Color transparent = new Color(0,0,0,0);
+        subtitleFrame.setBackground(transparent);
+        subtitleContainerLabel.setBackground(transparent);
         subtitleContainerLabel.setOpaque(false);
+        colorGroup.setBackground(transparent);
+        colorGroup.setVisible(false);
         subtitleFrame.setVisible(true);
+        
+        buttonColors.put(color1Button, Color.black);
+        buttonColors.put(color2Button, Color.white);
+        buttonColors.put(color3Button, Color.yellow);
+        buttonColors.put(color4Button, Color.red);
+        buttonColors.put(color5Button, Color.magenta);
+        buttonColors.put(color6Button, Color.orange);
+        
+        for(Entry<JButton, Color> buttonColor: buttonColors.entrySet()) {
+            buttonColor.getKey().setBackground(buttonColor.getValue());
+        }
     }
 
     /**
@@ -73,6 +90,13 @@ public class ApplicationForm extends javax.swing.JFrame {
         subtitleFrame = new javax.swing.JFrame();
         translucent1 = new subtitles.player.Translucent();
         subtitleContainerLabel = new javax.swing.JLabel();
+        colorGroup = new javax.swing.JPanel();
+        color5Button = new javax.swing.JButton();
+        color4Button = new javax.swing.JButton();
+        color6Button = new javax.swing.JButton();
+        color3Button = new javax.swing.JButton();
+        color2Button = new javax.swing.JButton();
+        color1Button = new javax.swing.JButton();
         openSubtitleFile = new javax.swing.JButton();
         status = new javax.swing.JLabel();
         playButton = new javax.swing.JButton();
@@ -84,17 +108,20 @@ public class ApplicationForm extends javax.swing.JFrame {
         subtitleFrame.setBackground(new java.awt.Color(255, 0, 142));
         subtitleFrame.setUndecorated(true);
 
+        translucent1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                translucent1MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                translucent1MouseExited(evt);
+            }
+        });
+
         subtitleContainerLabel.setBackground(new java.awt.Color(172, 188, 40));
         subtitleContainerLabel.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         subtitleContainerLabel.setForeground(new java.awt.Color(236, 231, 37));
         subtitleContainerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         subtitleContainerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                subtitleContainerLabelMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                subtitleContainerLabelMouseExited(evt);
-            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 subtitleContainerLabelMousePressed(evt);
             }
@@ -105,20 +132,101 @@ public class ApplicationForm extends javax.swing.JFrame {
             }
         });
 
+        color5Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                color5ButtonActionPerformed(evt);
+            }
+        });
+
+        color4Button.setBorder(color1Button.getBorder());
+        color4Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                color4ButtonActionPerformed(evt);
+            }
+        });
+
+        color6Button.setBorder(color1Button.getBorder());
+        color6Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                color6ButtonActionPerformed(evt);
+            }
+        });
+
+        color3Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                color3ButtonActionPerformed(evt);
+            }
+        });
+
+        color2Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                color2ButtonActionPerformed(evt);
+            }
+        });
+
+        color1Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                color1ButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout colorGroupLayout = new javax.swing.GroupLayout(colorGroup);
+        colorGroup.setLayout(colorGroupLayout);
+        colorGroupLayout.setHorizontalGroup(
+            colorGroupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, colorGroupLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(colorGroupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(color1Button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(color2Button, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(color3Button, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(colorGroupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(color5Button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(color4Button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(color6Button, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        colorGroupLayout.setVerticalGroup(
+            colorGroupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, colorGroupLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(colorGroupLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(colorGroupLayout.createSequentialGroup()
+                        .addComponent(color6Button, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(color4Button, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(color5Button, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(colorGroupLayout.createSequentialGroup()
+                        .addComponent(color1Button, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(color2Button, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(color3Button, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(93, 93, 93))
+        );
+
         javax.swing.GroupLayout translucent1Layout = new javax.swing.GroupLayout(translucent1);
         translucent1.setLayout(translucent1Layout);
         translucent1Layout.setHorizontalGroup(
             translucent1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(translucent1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(subtitleContainerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                .addComponent(subtitleContainerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(colorGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         translucent1Layout.setVerticalGroup(
             translucent1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(translucent1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(subtitleContainerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                .addGroup(translucent1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(translucent1Layout.createSequentialGroup()
+                        .addComponent(colorGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(subtitleContainerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -126,11 +234,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         subtitleFrame.getContentPane().setLayout(subtitleFrameLayout);
         subtitleFrameLayout.setHorizontalGroup(
             subtitleFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(translucent1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+            .addComponent(translucent1, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
         );
         subtitleFrameLayout.setVerticalGroup(
             subtitleFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(translucent1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+            .addComponent(translucent1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -209,7 +317,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(openSubtitleFile))
@@ -220,7 +328,8 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(timePositionLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(progressSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(progressSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
@@ -321,30 +430,68 @@ public class ApplicationForm extends javax.swing.JFrame {
             play();
     }//GEN-LAST:event_progressSliderMouseReleased
 
-    private void subtitleContainerLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMouseEntered
-        Border border = BorderFactory.createLineBorder(Color.yellow, 3);
-        subtitleContainerLabel.setBorder(border);
-    }//GEN-LAST:event_subtitleContainerLabelMouseEntered
-
-    private void subtitleContainerLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMouseExited
-        // Border border = BorderFactory.createLineBorder(Color.yellow, 3);
-        subtitleContainerLabel.setBorder(null);
-        
-    }//GEN-LAST:event_subtitleContainerLabelMouseExited
-
-    int posX;
-    int posY;
-    
-    private void subtitleContainerLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMousePressed
-        // TODO add your handling code here:
-      posX = evt.getX();
-      posY = evt.getY();
-    }//GEN-LAST:event_subtitleContainerLabelMousePressed
-
     private void subtitleContainerLabelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMouseDragged
         subtitleFrame.setLocation (evt.getXOnScreen()-posX,evt.getYOnScreen()-posY);
     }//GEN-LAST:event_subtitleContainerLabelMouseDragged
 
+    private void subtitleContainerLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMousePressed
+        // TODO add your handling code here:
+        posX = evt.getX();
+        posY = evt.getY();
+    }//GEN-LAST:event_subtitleContainerLabelMousePressed
+
+    private void color6ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_color6ButtonActionPerformed
+        colorText(evt);
+    }//GEN-LAST:event_color6ButtonActionPerformed
+
+    private void translucent1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_translucent1MouseEntered
+        Border border = BorderFactory.createLineBorder(Color.yellow, 2);
+        subtitleContainerLabel.setBorder(border);
+        colorGroup.setVisible(true);
+    }//GEN-LAST:event_translucent1MouseEntered
+
+    private void translucent1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_translucent1MouseExited
+        if (evt.getX() <= 0 || evt.getX() >= translucent1.getWidth() ||
+            evt.getY() <= 0 || evt.getY() >= translucent1.getHeight())
+        {    
+            subtitleContainerLabel.setBorder(null);
+            colorGroup.setVisible(false);
+        }
+        // @TODO: change. is unreliable
+    }//GEN-LAST:event_translucent1MouseExited
+
+    private void color1ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_color1ButtonActionPerformed
+        colorText(evt);
+    }//GEN-LAST:event_color1ButtonActionPerformed
+
+    private void color2ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_color2ButtonActionPerformed
+        colorText(evt);
+    }//GEN-LAST:event_color2ButtonActionPerformed
+
+    private void color3ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_color3ButtonActionPerformed
+        colorText(evt);
+    }//GEN-LAST:event_color3ButtonActionPerformed
+
+    private void color4ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_color4ButtonActionPerformed
+        colorText(evt);
+    }//GEN-LAST:event_color4ButtonActionPerformed
+
+    private void color5ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_color5ButtonActionPerformed
+        colorText(evt);
+    }//GEN-LAST:event_color5ButtonActionPerformed
+
+    private void colorText(java.awt.event.ActionEvent evt) {
+        colorText((JButton) evt.getSource());
+    }
+    
+    private void colorText(JButton button) {
+        Color color = buttonColors.get(button);
+        subtitleContainerLabel.setForeground(color);
+    }
+    
+    int posX;
+    int posY;
+    
     
     private void enableControls() {
         playButton.setEnabled(true);
@@ -411,6 +558,13 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton color1Button;
+    private javax.swing.JButton color2Button;
+    private javax.swing.JButton color3Button;
+    private javax.swing.JButton color4Button;
+    private javax.swing.JButton color5Button;
+    private javax.swing.JButton color6Button;
+    private javax.swing.JPanel colorGroup;
     private javax.swing.JButton openSubtitleFile;
     private javax.swing.JButton pauseButton;
     private javax.swing.JButton playButton;
