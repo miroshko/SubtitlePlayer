@@ -44,7 +44,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         screenWidth = gd.getDisplayMode().getWidth();
         screenHeight = gd.getDisplayMode().getHeight();
-        int margin = 20;
+        int margin = 150;
         int height = 150;
        
         subtitleFrame.setBounds(
@@ -88,16 +88,38 @@ public class ApplicationForm extends javax.swing.JFrame {
         subtitleContainerLabel.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         subtitleContainerLabel.setForeground(new java.awt.Color(236, 231, 37));
         subtitleContainerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        subtitleContainerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                subtitleContainerLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                subtitleContainerLabelMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                subtitleContainerLabelMousePressed(evt);
+            }
+        });
+        subtitleContainerLabel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                subtitleContainerLabelMouseDragged(evt);
+            }
+        });
 
         javax.swing.GroupLayout translucent1Layout = new javax.swing.GroupLayout(translucent1);
         translucent1.setLayout(translucent1Layout);
         translucent1Layout.setHorizontalGroup(
             translucent1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(subtitleContainerLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+            .addGroup(translucent1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(subtitleContainerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                .addContainerGap())
         );
         translucent1Layout.setVerticalGroup(
             translucent1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(subtitleContainerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+            .addGroup(translucent1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(subtitleContainerLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout subtitleFrameLayout = new javax.swing.GroupLayout(subtitleFrame.getContentPane());
@@ -187,7 +209,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(openSubtitleFile))
@@ -198,8 +220,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(timePositionLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(progressSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(progressSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -299,6 +320,30 @@ public class ApplicationForm extends javax.swing.JFrame {
         if (!pausedOnMousePressed)
             play();
     }//GEN-LAST:event_progressSliderMouseReleased
+
+    private void subtitleContainerLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMouseEntered
+        Border border = BorderFactory.createLineBorder(Color.yellow, 3);
+        subtitleContainerLabel.setBorder(border);
+    }//GEN-LAST:event_subtitleContainerLabelMouseEntered
+
+    private void subtitleContainerLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMouseExited
+        // Border border = BorderFactory.createLineBorder(Color.yellow, 3);
+        subtitleContainerLabel.setBorder(null);
+        
+    }//GEN-LAST:event_subtitleContainerLabelMouseExited
+
+    int posX;
+    int posY;
+    
+    private void subtitleContainerLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMousePressed
+        // TODO add your handling code here:
+      posX = evt.getX();
+      posY = evt.getY();
+    }//GEN-LAST:event_subtitleContainerLabelMousePressed
+
+    private void subtitleContainerLabelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subtitleContainerLabelMouseDragged
+        subtitleFrame.setLocation (evt.getXOnScreen()-posX,evt.getYOnScreen()-posY);
+    }//GEN-LAST:event_subtitleContainerLabelMouseDragged
 
     
     private void enableControls() {
