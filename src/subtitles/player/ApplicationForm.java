@@ -1,5 +1,7 @@
 package subtitles.player;
 
+import subtitleFile.Caption;
+import subtitleFile.TimedTextObject;
 import java.io.*;
 import java.util.concurrent.Executors;
 import javax.swing.*;
@@ -12,8 +14,10 @@ import java.util.Map.Entry;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.Color;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import javax.swing.border.Border;
-import sun.awt.resources.awt;
+import java.nio.charset.*;
 
 
 /*
@@ -37,6 +41,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private Future schedulerFuture;
     private HashMap<JButton, Color> buttonColors = new HashMap<JButton, Color>();
+    private Charset defaultCharset = Charset.defaultCharset();
    
     /**
      * Creates new form ApplicationForm
@@ -103,6 +108,8 @@ public class ApplicationForm extends javax.swing.JFrame {
         pauseButton = new javax.swing.JButton();
         progressSlider = new javax.swing.JSlider();
         timePositionLabel = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        encodingCombobox = new javax.swing.JComboBox();
 
         subtitleFrame.setAlwaysOnTop(true);
         subtitleFrame.setBackground(new java.awt.Color(255, 0, 142));
@@ -293,6 +300,15 @@ public class ApplicationForm extends javax.swing.JFrame {
         timePositionLabel.setText("0:00");
         timePositionLabel.setEnabled(false);
 
+        jLabel1.setText("Encoding");
+
+        encodingCombobox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UTF-8", "ISO-8859-1", "ISO-8859-15", "CP1252", "CP1251" }));
+        encodingCombobox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                encodingComboboxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -300,17 +316,22 @@ public class ApplicationForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(progressSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
+                    .addComponent(progressSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(status, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(openSubtitleFile)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(timePositionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(timePositionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(openSubtitleFile, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(14, 14, 14)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(encodingCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -319,17 +340,20 @@ public class ApplicationForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(openSubtitleFile))
+                    .addComponent(openSubtitleFile)
+                    .addComponent(jLabel1)
+                    .addComponent(encodingCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(playButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(pauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(timePositionLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progressSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -359,6 +383,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     
     private String getTextOnCurrentPosition() {
         int prevKey = timedText.captions.firstKey();
+        String text = "";
+
         for(int key: timedText.captions.keySet()) {
             if(key > currentPosition) {
               break;  
@@ -368,9 +394,14 @@ public class ApplicationForm extends javax.swing.JFrame {
         Caption currCaption = timedText.captions.get(prevKey);
         if (currCaption.start.getMseconds() < currentPosition &&
             currCaption.end.getMseconds() > currentPosition) {
-                return currCaption.content;
+                text = currCaption.content;
         }
-        return "";
+        
+        // String selectedEncoding = (String)encodingCombobox.getSelectedItem();
+        // Charset selectedCharset = Charset.forName(selectedEncoding);
+        // text = new String((new String(text.getBytes(), selectedCharset)).getBytes(defaultCharset));
+        
+        return text;
     }
 
     private void play() {
@@ -447,7 +478,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void translucent1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_translucent1MouseEntered
         Border border = BorderFactory.createLineBorder(Color.yellow, 2);
         subtitleContainerLabel.setBorder(border);
-        colorGroup.setVisible(true);
+        colorGroup.setVisible(false);
     }//GEN-LAST:event_translucent1MouseEntered
 
     private void translucent1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_translucent1MouseExited
@@ -480,6 +511,10 @@ public class ApplicationForm extends javax.swing.JFrame {
         colorText(evt);
     }//GEN-LAST:event_color5ButtonActionPerformed
 
+    private void encodingComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_encodingComboboxActionPerformed
+        OpenCurrentFile(false);
+    }//GEN-LAST:event_encodingComboboxActionPerformed
+
     private void colorText(java.awt.event.ActionEvent evt) {
         colorText((JButton) evt.getSource());
     }
@@ -503,18 +538,22 @@ public class ApplicationForm extends javax.swing.JFrame {
         
     }
    
-
     private void OpenCurrentFile() {
+        OpenCurrentFile(true);
+    }
+    private void OpenCurrentFile(boolean resetControls) {
         status.setText(String.format("Opened file: %s", currentFile.getName()));
         FormatSRT srt = new FormatSRT();
         try {
             InputStream is = new FileInputStream(currentFile);
-            timedText = srt.parseFile(currentFile.getAbsolutePath(), is);
-            int length = timedText.captions.lastEntry().getValue().end.getMseconds();
-            progressSlider.setMaximum(length);
-            progressSlider.setValue(0);
-            pause();
-            enableControls();
+            timedText = srt.parseFile(currentFile.getAbsolutePath(), is, (String)encodingCombobox.getSelectedItem());
+            if (resetControls) {
+                int length = timedText.captions.lastEntry().getValue().end.getMseconds();
+                progressSlider.setMaximum(length);
+                progressSlider.setValue(0);
+                pause();
+                enableControls();
+            }
             // subtitleForm = new SubtitleWindow();
             // subtitleForm.setVisible(true);
         } catch (IOException e) {
@@ -565,6 +604,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JButton color5Button;
     private javax.swing.JButton color6Button;
     private javax.swing.JPanel colorGroup;
+    private javax.swing.JComboBox encodingCombobox;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JButton openSubtitleFile;
     private javax.swing.JButton pauseButton;
     private javax.swing.JButton playButton;
