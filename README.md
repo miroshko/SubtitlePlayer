@@ -12,3 +12,4 @@ Planned features:
 - shadow/emboss to improve readability
 - adjustable font
 - supporting formats other than .srt
+- set up automatic build system and host compiled executable
