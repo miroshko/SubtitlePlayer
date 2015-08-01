@@ -23,22 +23,12 @@ public class ShadowText extends JLabel {
     Graphics2D g1 = (Graphics2D) g;
 
     String text = this.getText();
-    // @todo: html should be taken into account in fact
-    text = text.replaceAll("\\<.*?>"," ");
-    if (text.length() == 0) {
-        return;
-    }
-    TextLayout textLayout = new TextLayout(text, this.getFont(), g1.getFontRenderContext());
-    int strokeWidth = 2;
-    Color strokeColor = new Color(50,50,50);
-    for(double i = -Math.PI; i < Math.PI; i+= Math.PI / 8) {
-        g1.setPaint(strokeColor);
-        textLayout.draw(
-                        g1,
-                        (float)x + (float)strokeWidth * (float)Math.sin(i),
-                        (float)y + (float)strokeWidth * (float)Math.cos(i)
-                       );
-    }
+
+    BasicHtmlTextLayoutDrawer textLayout;
+    textLayout = new BasicHtmlTextLayoutDrawer(text, this.getFont(), g1.getFontRenderContext());
+    textLayout.setTextColor(Color.white);
+    textLayout.setStrokeColor(Color.black);
+    textLayout.setStrokeWidth(2);
     
     g1.setPaint(this.getForeground());
     textLayout.draw(g1, x, y);
