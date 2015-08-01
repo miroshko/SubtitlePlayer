@@ -8,6 +8,8 @@ Develepment in progeress
 Tested on Ubuntu 14.04
 
 Planned features:
+- work with full screen mode of flash players
 - shadow/emboss to improve readability
 - adjustable font
 - supporting formats other than .srt
+- set up automatic build system and host compiled executable
