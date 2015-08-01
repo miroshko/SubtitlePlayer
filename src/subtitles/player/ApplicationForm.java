@@ -94,7 +94,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         subtitleFileChooser = new javax.swing.JFileChooser();
         subtitleFrame = new javax.swing.JFrame();
         translucent1 = new subtitles.player.Translucent();
-        subtitleContainerLabel = new javax.swing.JLabel();
+        subtitleContainerLabel = new subtitles.player.ShadowText();
         colorGroup = new javax.swing.JPanel();
         color5Button = new javax.swing.JButton();
         color4Button = new javax.swing.JButton();
@@ -125,9 +125,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
 
         subtitleContainerLabel.setBackground(new java.awt.Color(172, 188, 40));
-        subtitleContainerLabel.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
-        subtitleContainerLabel.setForeground(new java.awt.Color(236, 231, 37));
+        subtitleContainerLabel.setForeground(new java.awt.Color(254, 254, 254));
         subtitleContainerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        subtitleContainerLabel.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         subtitleContainerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 subtitleContainerLabelMousePressed(evt);
@@ -611,7 +611,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JButton playButton;
     private javax.swing.JSlider progressSlider;
     private javax.swing.JLabel status;
-    private javax.swing.JLabel subtitleContainerLabel;
+    private subtitles.player.ShadowText subtitleContainerLabel;
     private javax.swing.JFileChooser subtitleFileChooser;
     private javax.swing.JFrame subtitleFrame;
     private javax.swing.JLabel timePositionLabel;
