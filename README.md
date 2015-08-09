@@ -7,7 +7,7 @@ Plays subtitles independently from any video. Useful for streams.
 
 Executable: http://miroshko.name/SubtitlePlayer/dist/Subtitles_Player.jar
 
-Develepment in progeress
+Development in progress
 
 Tested on Ubuntu 14.04
 
